@@ -1,5 +1,8 @@
 using EpsilonWebApp.Client.Pages;
 using EpsilonWebApp.Components;
+using EpsilonWebApp.SQLServer;
+using EpsilonWebApp.SQLServer.Registration;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Filters;
 
@@ -19,6 +22,8 @@ var logger = new LoggerConfiguration()
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
+
+builder.Services.AddPersistence(builder.Configuration);
 
 var app = builder.Build();
 app.Logger.LogInformation("Application starting {EnvironmentName}", app.Environment.EnvironmentName);
@@ -46,4 +51,29 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(EpsilonWebApp.Client._Imports).Assembly);
 
+if (app.Environment.IsDevelopment())
+{
+    //await MigrateDatabaseAsync(app);
+}
+
 app.Run();
+
+async Task MigrateDatabaseAsync(WebApplication webApplication)
+{
+    using (var scope = webApplication.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        try
+        {
+            var context = services.GetRequiredService<ApplicationDbContext>();
+            await context.Database.EnsureCreatedAsync();
+            await context.Database.MigrateAsync();
+        }
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex.ToString());
+        }
+    }
+}
+

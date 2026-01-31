@@ -1,0 +1,27 @@
+﻿services:
+  epsilonwebapp:
+    container_name: epsilonwebapp
+    build:
+      context: .
+      dockerfile: EpsilonWebApp/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Server=sqlserver,1433;Database=Test;User Id=sa;Password=P@ssword123;TrustServerCertificate=True;
+    depends_on:
+      - sqlserver
+  
+  sqlserver:
+    container_name: sqlserver-2022
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "P@ssword123"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+volumes:
+  sqlserver-data:
