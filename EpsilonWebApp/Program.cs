@@ -1,5 +1,7 @@
 using EpsilonWebApp.Client.Pages;
 using EpsilonWebApp.Components;
+using EpsilonWebApp.Core.Features.Customers.DeleteCustomer;
+using EpsilonWebApp.Endpoints;
 using EpsilonWebApp.SQLServer;
 using EpsilonWebApp.SQLServer.Registration;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +26,7 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
 builder.Services.AddPersistence(builder.Configuration);
+builder.Services.AddScoped<IDeleteCustomer, DeleteCustomer>();
 
 var app = builder.Build();
 app.Logger.LogInformation("Application starting {EnvironmentName}", app.Environment.EnvironmentName);
@@ -41,9 +44,8 @@ else
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseAntiforgery();
+app.RegisterCustomerEndpoints();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()

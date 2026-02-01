@@ -1,3 +1,5 @@
+using EpsilonWebApp.Core.Contracts;
+using EpsilonWebApp.SQLServer.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +17,8 @@ public static class ServiceRegistration
             {
                 
             }));
+
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
 
         return services;
     }
