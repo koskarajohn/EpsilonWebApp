@@ -16,7 +16,6 @@
     <ProjectReference Include="..\EpsilonWebApp.Client\EpsilonWebApp.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.11" />
     <ProjectReference Include="..\EpsilonWebApp.Core\EpsilonWebApp.Core.csproj" />
-    <ProjectReference Include="..\EpsilonWebApp.Shared\EpsilonWebApp.Shared.csproj" />
     <ProjectReference Include="..\EpsilonWebApp.SQLServer\EpsilonWebApp.SQLServer.csproj" />
   </ItemGroup>
 

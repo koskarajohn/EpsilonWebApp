@@ -1,6 +1,7 @@
 using EpsilonWebApp.Client.Pages;
 using EpsilonWebApp.Components;
 using EpsilonWebApp.Core.Features.Customers.DeleteCustomer;
+using EpsilonWebApp.Core.Features.Customers.GetCustomers;
 using EpsilonWebApp.Endpoints;
 using EpsilonWebApp.SQLServer;
 using EpsilonWebApp.SQLServer.Registration;
@@ -30,6 +31,7 @@ builder.Logging.AddSerilog(logger);
 
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddScoped<IDeleteCustomer, DeleteCustomer>();
+builder.Services.AddScoped<IGetCustomers, GetCustomers>();
 
 var app = builder.Build();
 app.Logger.LogInformation("Application starting {EnvironmentName}", app.Environment.EnvironmentName);
