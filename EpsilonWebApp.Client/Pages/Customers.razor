@@ -29,7 +29,7 @@
         <MudTd>@context.Country</MudTd>
         <MudTd>@context.Phone</MudTd>
         <MudTd>
-            <MudIcon Icon="@Icons.Material.Filled.Edit"></MudIcon>
+            <MudIcon Icon="@Icons.Material.Filled.Edit" @onclick="() => UpdateCustomer(context)"></MudIcon>
             <MudIcon Icon="@Icons.Material.Filled.Delete" @onclick="() => DeleteCustomer(context)"></MudIcon>
         </MudTd>
     </RowTemplate>
@@ -64,10 +64,38 @@
 
             var deleteResponse = await APIClient.DeleteAsync($"customers/{customer.Id}");
             if (deleteResponse.Success)
+            {
+                var list = (List<CustomerDTO>)_customers;
+                list.Remove(customer);
                 Snackbar.Add("Success", Severity.Success);
+            }
+                
             else
                 Snackbar.Add(deleteResponse!.ErrorMessage, Severity.Error);
         }
+    }
+    
+    private async Task UpdateCustomer(CustomerDTO customer)
+    {
+        var parameters = new DialogParameters<UpsertCustomer>()
+        {
+            { x => x.Customer, new UpsertCustomerDTO()
+            {
+                Id = customer.Id,
+                ContactName = customer.ContactName,
+                Country = customer.Country,
+                Address = customer.Address,
+                City = customer.City,
+                PostalCode = customer.PostalCode,
+                Region = customer.Region,
+                Phone = customer.Phone
+            } },
+        };
+        
+        var dialog = await DialogService.ShowAsync<UpsertCustomer>("Update Customer", parameters);
+        var result = await dialog.Result;
+
+        
     }
 
 }
