@@ -1,9 +1,8 @@
 ﻿@inherits LayoutComponentBase
+@using EpsilonWebApp.Client.Components
 
 <MudThemeProvider />
-<MudDialogProvider />
-<MudSnackbarProvider />
-<MudPopoverProvider />
+<InteractiveProviders @rendermode="InteractiveWebAssembly" />
 
 <div class="page">
     <div class="sidebar">

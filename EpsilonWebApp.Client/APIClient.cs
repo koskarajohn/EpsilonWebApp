@@ -33,4 +33,32 @@ public class APIClient
 
         return responseObject;
     }
+
+    
+    public async Task<BaseResponse> DeleteAsync(string url) 
+    {
+        var response = new BaseResponse();
+        
+        try
+        {
+            var apiResponseMessage = await _httpClient.DeleteAsync(url);
+            
+            if (apiResponseMessage.IsSuccessStatusCode)
+                return response;
+            
+            var info = await apiResponseMessage.Content.ReadFromJsonAsync<APIErrorResponse>();
+            response.Success = false;
+            response.ErrorMessage = info.Title;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+            response.Success = false;
+            response.ErrorMessage = ex.Message;
+        }
+
+        return response;
+    }
+
+    public record APIErrorResponse(string Title, int Status);
 }

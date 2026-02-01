@@ -1,8 +1,10 @@
 @page "/Customers"
 @rendermode @(new InteractiveWebAssemblyRenderMode(false))
+@using EpsilonWebApp.Client.Components
 @using EpsilonWebApp.Shared.DTO
-
 @inject APIClient APIClient
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <h3 class="my-5">Customers</h3>
 
@@ -16,6 +18,7 @@
         <MudTh>Postal Code</MudTh>
         <MudTh>Country</MudTh>
         <MudTh>Phone</MudTh>
+        <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd>@context.ContactName</MudTd>
@@ -25,12 +28,15 @@
         <MudTd>@context.PostalCode</MudTd>
         <MudTd>@context.Country</MudTd>
         <MudTd>@context.Phone</MudTd>
+        <MudTd>
+            <MudIcon Icon="@Icons.Material.Filled.Edit"></MudIcon>
+            <MudIcon Icon="@Icons.Material.Filled.Delete" @onclick="() => DeleteCustomer(context)"></MudIcon>
+        </MudTd>
     </RowTemplate>
     <PagerContent>
         <MudTablePager />
     </PagerContent>
 </MudTable>
-
 
 @code {
     
@@ -40,6 +46,28 @@
     {
         var customers = await APIClient.GetAsync<List<CustomerDTO>>("customers");
         _customers = customers;
+    }
+
+    private async Task DeleteCustomer(CustomerDTO customer)
+    {
+        var parameters = new DialogParameters<YesNoDialog>()
+        {
+            { x => x.Title, "Delete Customer" },
+            {x => x.Content, "Customer will be deleted. Do you wish to continue" }
+        };
+        
+        var dialog = await DialogService.ShowAsync<YesNoDialog>("Delete Customer", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+
+            var deleteResponse = await APIClient.DeleteAsync($"customers/{customer.Id}");
+            if (deleteResponse.Success)
+                Snackbar.Add("Success", Severity.Success);
+            else
+                Snackbar.Add(deleteResponse!.ErrorMessage, Severity.Error);
+        }
     }
 
 }
