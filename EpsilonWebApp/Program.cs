@@ -5,6 +5,7 @@ using EpsilonWebApp.Endpoints;
 using EpsilonWebApp.SQLServer;
 using EpsilonWebApp.SQLServer.Registration;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor.Services;
 using Serilog;
 using Serilog.Filters;
 
@@ -14,6 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddMudServices();
 
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)

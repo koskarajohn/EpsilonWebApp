@@ -12,6 +12,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="MudBlazor" Version="8.15.0" />
     <ProjectReference Include="..\EpsilonWebApp.Client\EpsilonWebApp.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.11" />
     <ProjectReference Include="..\EpsilonWebApp.Core\EpsilonWebApp.Core.csproj" />

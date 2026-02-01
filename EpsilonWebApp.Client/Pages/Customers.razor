@@ -1,0 +1,36 @@
+@page "/Customers"
+@rendermode InteractiveWebAssembly
+@using EpsilonWebApp.Shared.DTO
+
+<h3 class="my-5">Customers</h3>
+
+<MudTable Items="@_customers" Dense="false" Hover="true" Bordered="true" Striped="true">
+          
+    <HeaderContent>
+        <MudTh>Contact Name</MudTh>
+        <MudTh>Address</MudTh>
+        <MudTh>City</MudTh>
+        <MudTh>Region</MudTh>
+        <MudTh>Postal Code</MudTh>
+        <MudTh>Country</MudTh>
+        <MudTh>Phone</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.ContactName</MudTd>
+        <MudTd>@context.Address</MudTd>
+        <MudTd>@context.City</MudTd>
+        <MudTd>@context.Region</MudTd>
+        <MudTd>@context.PostalCode</MudTd>
+        <MudTd>@context.Country</MudTd>
+        <MudTd>@context.Phone</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+
+@code {
+    
+    private IEnumerable<CustomerDTO> _customers = new List<CustomerDTO>();
+}
