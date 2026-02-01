@@ -27,7 +27,7 @@ public static class ErrorOrExtensions
         
         return Results.Problem(
             statusCode: statusCode,
-            title: firstError.Description,
+            title: firstError.Code,
             extensions: new Dictionary<string, object?>
             {
                 ["errors"] = errors.Select(e => new
