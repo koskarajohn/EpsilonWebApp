@@ -1,5 +1,7 @@
+using EpsilonWebApp;
 using EpsilonWebApp.Client.Pages;
 using EpsilonWebApp.Components;
+using EpsilonWebApp.Core.Features.Customers.CreateCustomer;
 using EpsilonWebApp.Core.Features.Customers.DeleteCustomer;
 using EpsilonWebApp.Core.Features.Customers.GetCustomer;
 using EpsilonWebApp.Core.Features.Customers.GetCustomers;
@@ -34,6 +36,9 @@ builder.Services.AddScoped<IDeleteCustomer, DeleteCustomer>();
 builder.Services.AddScoped<IGetCustomers, GetCustomers>();
 builder.Services.AddScoped<IUpdateCustomer, UpdateCustomer>();
 builder.Services.AddScoped<IGetCustomer, GetCustomer>();
+builder.Services.AddScoped<ICreateCustomer, CreateCustomer>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 app.Logger.LogInformation("Application starting {EnvironmentName}", app.Environment.EnvironmentName);
@@ -45,10 +50,12 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+// Use GlobalExceptionHandler for all requests (returns JSON for API, can be customized for pages)
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 app.UseAntiforgery();
