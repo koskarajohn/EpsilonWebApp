@@ -1,4 +1,5 @@
 using EpsilonWebApp.Core.Features.Customers.DeleteCustomer;
+using EpsilonWebApp.Core.Features.Customers.GetCustomer;
 using EpsilonWebApp.Core.Features.Customers.GetCustomers;
 using EpsilonWebApp.Core.Features.Customers.UpdateCustomer;
 using EpsilonWebApp.Shared.DTO;
@@ -13,6 +14,12 @@ public static class CustomerEndpoints
             .MapGroup("api/v1/customers")
             .WithTags("Customers")
             .DisableAntiforgery();
+        
+        group.MapGet("/{id:guid}", async (Guid id, IGetCustomer getCustomer, CancellationToken cancellationToken) =>
+        {
+            var result = await getCustomer.InvokeAsync(id, cancellationToken).ConfigureAwait(false);
+            return result.ToResult();
+        });
 
         group.MapGet("", async (IGetCustomers getCustomers, CancellationToken cancellationToken) =>
         {

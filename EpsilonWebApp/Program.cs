@@ -1,6 +1,7 @@
 using EpsilonWebApp.Client.Pages;
 using EpsilonWebApp.Components;
 using EpsilonWebApp.Core.Features.Customers.DeleteCustomer;
+using EpsilonWebApp.Core.Features.Customers.GetCustomer;
 using EpsilonWebApp.Core.Features.Customers.GetCustomers;
 using EpsilonWebApp.Core.Features.Customers.UpdateCustomer;
 using EpsilonWebApp.Endpoints;
@@ -22,8 +23,6 @@ builder.Services.AddMudServices();
 
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
-    .Filter.ByExcluding(
-        Matching.FromSource("Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddleware"))
     .Enrich.WithProperty("MachineName", System.Environment.MachineName)
     .CreateLogger();
 
@@ -34,6 +33,7 @@ builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddScoped<IDeleteCustomer, DeleteCustomer>();
 builder.Services.AddScoped<IGetCustomers, GetCustomers>();
 builder.Services.AddScoped<IUpdateCustomer, UpdateCustomer>();
+builder.Services.AddScoped<IGetCustomer, GetCustomer>();
 
 var app = builder.Build();
 app.Logger.LogInformation("Application starting {EnvironmentName}", app.Environment.EnvironmentName);
