@@ -64,6 +64,8 @@
 
         if (_isUpdate)
             await UpdateCustomerAsync();
+        else
+            await CreateCustomerAsync();
     }
 
     private async Task UpdateCustomerAsync()
@@ -72,11 +74,24 @@
         if (updateResponse.Success)
         {
             
-            Snackbar.Add("Success", Severity.Success);
+            Snackbar.Add("Customer updated successfully.", Severity.Success);
             MudDialog.Close(DialogResult.Ok(Customer));
         }
         else
             Snackbar.Add(updateResponse!.ErrorMessage, Severity.Error);
+    }
+    
+    private async Task CreateCustomerAsync()
+    {
+        var newCustomer = await Client.PostAsync<UpsertCustomerDTO>($"customers", Customer);
+        if (newCustomer.Id != Guid.Empty)
+        {
+            
+            Snackbar.Add("Customer created successfully.", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(newCustomer));
+        }
+        else
+            Snackbar.Add("New customer creation failed", Severity.Error);
     }
 
     private void Cancel() => MudDialog.Cancel();

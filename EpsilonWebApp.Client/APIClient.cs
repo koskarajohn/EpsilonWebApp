@@ -34,6 +34,25 @@ public class APIClient
         return responseObject;
     }
 
+    public async Task<T?> PostAsync<T>(string url, object data) where T : new()
+    {
+        var responseObject = new T();
+        
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync(url, data);
+            
+            if (response.IsSuccessStatusCode)
+                responseObject = await response.Content.ReadFromJsonAsync<T>();
+            
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+
+        return responseObject;
+    }
     
     public async Task<BaseResponse> DeleteAsync(string url) 
     {

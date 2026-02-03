@@ -12,5 +12,20 @@ public class CustomerDTO
     public string? Country { get; set; }
     public string? Phone { get; set; }
     
-    
+    public static CustomerDTO GetFrom(UpsertCustomerDTO customer)
+    {
+        if (customer == null) return new CustomerDTO();
+
+        return new CustomerDTO()
+        {
+            Id = customer.Id.HasValue ? customer.Id.Value : Guid.NewGuid(),
+            ContactName = customer.ContactName,
+            Country = customer.Country,
+            Address = customer.Address,
+            City = customer.City,
+            PostalCode = customer.PostalCode,
+            Region = customer.Region,
+            Phone = customer.Phone
+        };
+    }
 }

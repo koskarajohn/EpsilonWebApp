@@ -6,10 +6,13 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
-<h3 class="my-5">Customers</h3>
+<h3 class="my-5 text-center">Customers</h3>
 
-<MudTable Items="@_customers" Dense="false" Hover="true" Bordered="true" Striped="true">
-          
+<MudTable Items="@_customers" Dense="false" Hover="true" Bordered="true" Striped="true" Loading="_isLoading">
+    <ToolBarContent>
+        <MudSpacer />
+        <MudButton OnClick="CreateCustomer" Variant="Variant.Filled" Color="Color.Primary" Class="mr-2" Style="text-transform: initial;">Create New Customer</MudButton>
+    </ToolBarContent>
     <HeaderContent>
         <MudTh>Contact Name</MudTh>
         <MudTh>Address</MudTh>
@@ -34,18 +37,20 @@
         </MudTd>
     </RowTemplate>
     <PagerContent>
-        <MudTablePager />
+        <MudTablePager/>
     </PagerContent>
 </MudTable>
 
 @code {
     
     private IEnumerable<CustomerDTO> _customers = new List<CustomerDTO>();
+    private bool _isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         var customers = await APIClient.GetAsync<List<CustomerDTO>>("customers");
         _customers = customers;
+        _isLoading = false;
     }
 
     private async Task DeleteCustomer(CustomerDTO customer)
@@ -95,6 +100,24 @@
             customer.Country = updated.Country;
             customer.Phone = updated.Phone;
             customer.Region = updated.Region;
+        }
+    }
+    
+    private async Task CreateCustomer()
+    {
+        var parameters = new DialogParameters<UpsertCustomer>()
+        {
+        };
+        
+        var dialog = await DialogService.ShowAsync<UpsertCustomer>("Create New Customer", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var created = (UpsertCustomerDTO)result.Data;
+            
+            var list = (List<CustomerDTO>)_customers;
+            list.Insert(0,CustomerDTO.GetFrom((created)));
         }
     }
 
