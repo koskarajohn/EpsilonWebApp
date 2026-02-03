@@ -54,7 +54,6 @@ else
     app.UseHsts();
 }
 
-// Use GlobalExceptionHandler for all requests (returns JSON for API, can be customized for pages)
 app.UseExceptionHandler();
 
 app.UseHttpsRedirection();

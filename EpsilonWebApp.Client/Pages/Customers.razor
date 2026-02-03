@@ -79,23 +79,23 @@
     {
         var parameters = new DialogParameters<UpsertCustomer>()
         {
-            { x => x.Customer, new UpsertCustomerDTO()
-            {
-                Id = customer.Id,
-                ContactName = customer.ContactName,
-                Country = customer.Country,
-                Address = customer.Address,
-                City = customer.City,
-                PostalCode = customer.PostalCode,
-                Region = customer.Region,
-                Phone = customer.Phone
-            } },
+            { x => x.Customer, UpsertCustomerDTO.GetFrom(customer) },
         };
         
         var dialog = await DialogService.ShowAsync<UpsertCustomer>("Update Customer", parameters);
         var result = await dialog.Result;
 
-        
+        if (!result.Canceled)
+        {
+            var updated = (UpsertCustomerDTO)result.Data;
+            customer.Address = updated.Address;
+            customer.City = updated.City;
+            customer.ContactName = updated.ContactName;
+            customer.PostalCode = updated.PostalCode;
+            customer.Country = updated.Country;
+            customer.Phone = updated.Phone;
+            customer.Region = updated.Region;
+        }
     }
 
 }

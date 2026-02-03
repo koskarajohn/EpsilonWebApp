@@ -28,4 +28,23 @@ public class UpsertCustomerDTO
     
     [Phone]
     public string? Phone { get; set; }
+
+
+    public static UpsertCustomerDTO GetFrom(CustomerDTO customer)
+    {
+        if (customer == null) return new UpsertCustomerDTO();
+
+        return new UpsertCustomerDTO()
+        {
+            Id = customer.Id,
+            ContactName = customer.ContactName,
+            Country = customer.Country,
+            Address = customer.Address,
+            City = customer.City,
+            PostalCode = customer.PostalCode,
+            Region = customer.Region,
+            Phone = customer.Phone
+        };
+    }
+    
 }

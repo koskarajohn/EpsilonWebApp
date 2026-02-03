@@ -45,11 +45,14 @@
     public UpsertCustomerDTO Customer { get; set; }
     
     private MudForm? _form;
+    private bool _isUpdate = false;
 
     protected override void OnParametersSet()
     {
         if (Customer is null)
             Customer = new();
+
+        _isUpdate = Customer.Id.HasValue;
     }
 
     private async Task Submit()
@@ -58,7 +61,13 @@
 
         if (!_form.IsValid)
             return;
-        
+
+        if (_isUpdate)
+            await UpdateCustomerAsync();
+    }
+
+    private async Task UpdateCustomerAsync()
+    {
         var updateResponse = await Client.PutAsync($"customers/{Customer.Id}", Customer);
         if (updateResponse.Success)
         {
@@ -68,7 +77,6 @@
         }
         else
             Snackbar.Add(updateResponse!.ErrorMessage, Severity.Error);
-        
     }
 
     private void Cancel() => MudDialog.Cancel();
