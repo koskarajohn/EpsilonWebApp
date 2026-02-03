@@ -27,6 +27,7 @@ public class UpsertCustomerDTO
     public string? Country { get; set; }
     
     [Phone]
+    [Required]
     public string? Phone { get; set; }
 
 

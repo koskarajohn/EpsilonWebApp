@@ -21,7 +21,7 @@
                             <MudTextField Label="City" @bind-Value="Customer.City" For="@(() => Customer.City)"/>
                             <MudTextField Label="Region" @bind-Value="Customer.Region" For="@(() => Customer.Region)"/>
                             <MudTextField Label="PostalCode" @bind-Value="Customer.PostalCode" For="@(() => Customer.PostalCode)"/>
-                            <MudTextField Label="Phone" @bind-Value="Customer.Phone" For="@(() => Customer.Phone)"/>
+                            <MudTextField Label="Phone" @bind-Value="Customer.Phone" For="@(() => Customer.Phone)" Required="true"/>
                         </MudForm>
                     </MudPaper>
                 </MudItem>
@@ -84,7 +84,7 @@
     private async Task CreateCustomerAsync()
     {
         var newCustomer = await Client.PostAsync<UpsertCustomerDTO>($"customers", Customer);
-        if (newCustomer.Id != Guid.Empty)
+        if (newCustomer.Id is null || newCustomer.Id != Guid.Empty)
         {
             
             Snackbar.Add("Customer created successfully.", Severity.Success);
