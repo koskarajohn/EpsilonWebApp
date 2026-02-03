@@ -68,7 +68,7 @@ app.MapRazorComponents<App>()
 
 if (app.Environment.IsDevelopment())
 {
-    //await MigrateDatabaseAsync(app);
+    await MigrateDatabaseAsync(app);
 }
 
 app.Run();
@@ -81,7 +81,6 @@ async Task MigrateDatabaseAsync(WebApplication webApplication)
         try
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
-            await context.Database.EnsureCreatedAsync();
             await context.Database.MigrateAsync();
         }
         catch (Exception ex)
