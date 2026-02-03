@@ -1,6 +1,8 @@
 using EpsilonWebApp;
 using EpsilonWebApp.Client.Pages;
 using EpsilonWebApp.Components;
+using EpsilonWebApp.Core.Contracts;
+using EpsilonWebApp.Core.Entities;
 using EpsilonWebApp.Core.Features.Customers.CreateCustomer;
 using EpsilonWebApp.Core.Features.Customers.DeleteCustomer;
 using EpsilonWebApp.Core.Features.Customers.GetCustomer;
@@ -82,6 +84,15 @@ async Task MigrateDatabaseAsync(WebApplication webApplication)
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
             await context.Database.MigrateAsync();
+            
+            var userRepo = services.GetRequiredService<IUserRepository>();
+            var dummyUser = await userRepo.GetUserByEmailAsync("kvkarag@gmail.com", CancellationToken.None);
+            if (dummyUser is null)
+            {
+                dummyUser = new User("kvkarag@gmal.com", "StrongPassword!@#");
+                await userRepo.AddAsync(dummyUser, CancellationToken.None);
+                
+            }
         }
         catch (Exception ex)
         {
@@ -90,4 +101,6 @@ async Task MigrateDatabaseAsync(WebApplication webApplication)
         }
     }
 }
+
+
 

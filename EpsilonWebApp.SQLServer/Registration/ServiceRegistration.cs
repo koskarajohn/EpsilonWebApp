@@ -19,6 +19,7 @@ public static class ServiceRegistration
             }));
 
         services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         return services;
     }
