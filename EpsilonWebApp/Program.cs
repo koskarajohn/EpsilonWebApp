@@ -3,6 +3,8 @@ using EpsilonWebApp.Client.Pages;
 using EpsilonWebApp.Components;
 using EpsilonWebApp.Core.Contracts;
 using EpsilonWebApp.Core.Entities;
+using EpsilonWebApp.Core.Features.Authentication;
+using EpsilonWebApp.Core.Features.Authentication.Login;
 using EpsilonWebApp.Core.Features.Customers.CreateCustomer;
 using EpsilonWebApp.Core.Features.Customers.DeleteCustomer;
 using EpsilonWebApp.Core.Features.Customers.GetCustomer;
@@ -39,6 +41,9 @@ builder.Services.AddScoped<IGetCustomers, GetCustomers>();
 builder.Services.AddScoped<IUpdateCustomer, UpdateCustomer>();
 builder.Services.AddScoped<IGetCustomer, GetCustomer>();
 builder.Services.AddScoped<ICreateCustomer, CreateCustomer>();
+builder.Services.AddScoped<IJWTService, JWTService>();
+builder.Services.AddScoped<ILogin, Login>();
+
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
@@ -61,6 +66,7 @@ app.UseExceptionHandler();
 app.UseHttpsRedirection();
 app.UseAntiforgery();
 app.RegisterCustomerEndpoints();
+app.RegisterAuthenticationEndpoints();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
@@ -89,7 +95,7 @@ async Task MigrateDatabaseAsync(WebApplication webApplication)
             var dummyUser = await userRepo.GetUserByEmailAsync("kvkarag@gmail.com", CancellationToken.None);
             if (dummyUser is null)
             {
-                dummyUser = new User("kvkarag@gmal.com", "StrongPassword!@#");
+                dummyUser = new User("kvkarag@gmail.com", "StrongPassword!@#");
                 await userRepo.AddAsync(dummyUser, CancellationToken.None);
                 
             }
