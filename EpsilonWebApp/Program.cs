@@ -65,6 +65,8 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 app.UseAntiforgery();
+app.UseMiddleware<AuthenticationMiddleware>();
+
 app.RegisterCustomerEndpoints();
 app.RegisterAuthenticationEndpoints();
 

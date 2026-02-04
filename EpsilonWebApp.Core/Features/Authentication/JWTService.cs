@@ -44,6 +44,32 @@ public class JWTService : IJWTService
 
     public ClaimsPrincipal? ValidateToken(string token)
     {
-        throw new NotImplementedException();
+        try
+        {
+            
+            var key = _configuration["JwtSettings:SecretKey"];
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var keyBytes = Encoding.UTF8.GetBytes(key);
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = "epsilon",
+                ValidAudience = "audience",
+                IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+                ClockSkew = TimeSpan.Zero
+            };
+
+            var principal = tokenHandler.ValidateToken(token, validationParameters, out var securityToken);
+            return principal;
+        }
+        catch
+        {
+            return null;
+        }
     }
+    
 }

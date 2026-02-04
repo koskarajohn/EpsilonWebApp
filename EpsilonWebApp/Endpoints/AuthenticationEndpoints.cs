@@ -36,11 +36,6 @@ public static class AuthenticationEndpoints
             
             return response.ToResult();
         }).AllowAnonymous();
-        
-       
-        
-       
-
 
         return app;
     }
