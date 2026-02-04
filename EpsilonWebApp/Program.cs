@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using Serilog;
 using Serilog.Filters;
+using Login = EpsilonWebApp.Core.Features.Authentication.Login.Login;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,7 +66,7 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 app.UseAntiforgery();
-app.UseMiddleware<AuthenticationMiddleware>();
+//app.UseMiddleware<AuthenticationMiddleware>();
 
 app.RegisterCustomerEndpoints();
 app.RegisterAuthenticationEndpoints();
