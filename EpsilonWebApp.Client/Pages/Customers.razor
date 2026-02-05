@@ -1,7 +1,9 @@
 @page "/Customers"
+@attribute [Authorize]
 @rendermode @(new InteractiveWebAssemblyRenderMode(false))
 @using EpsilonWebApp.Client.Components
 @using EpsilonWebApp.Shared.DTO
+@using Microsoft.AspNetCore.Authorization
 @inject APIClient APIClient
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar

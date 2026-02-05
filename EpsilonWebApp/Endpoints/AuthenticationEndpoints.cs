@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using EpsilonWebApp.Core.Features.Authentication.Login;
 using EpsilonWebApp.Shared.DTO;
 using ErrorOr;
@@ -36,6 +37,19 @@ public static class AuthenticationEndpoints
             
             return response.ToResult();
         }).AllowAnonymous();
+
+        group.MapGet("/me", async (HttpContext httpContext, CancellationToken cancellationToken) =>
+        {
+
+            var userId = httpContext.User.FindFirst("id")?.Value;
+            var email = httpContext.User.FindFirst(ClaimTypes.Email)?.Value;
+
+            return Results.Ok(new UserInfo()
+            {
+                Id = userId,
+                Email = email
+            });
+        });
 
         return app;
     }

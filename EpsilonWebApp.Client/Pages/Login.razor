@@ -5,8 +5,11 @@
 @rendermode @(new InteractiveWebAssemblyRenderMode(false))
 @using EpsilonWebApp.Shared.DTO
 @using EpsilonWebApp.Client.Components
+@using Microsoft.AspNetCore.Components.Authorization
 @inject ISnackbar Snackbar
 @inject APIClient APIClient
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
 
 <style>
       .login-container {
@@ -24,7 +27,7 @@
   </style>
 
 <div class="login-container">
-    <MudPaper Elevation="3" Class="pa-6 login-paper">
+    <MudPaper Elevation="3" Class="pa-6 login-paper mx-3">
         <MudText Typo="Typo.h5" Class="my-4 text-center">User login</MudText>
         <MudForm @ref="_form" Model="_model"> 
             <MudTextField Label="Email" @bind-Value="_model.Email" For="@(() => _model.Email)" Required="true" InputType="InputType.Email"/>
@@ -62,6 +65,9 @@
             if (response.Success)
             {
                 
+                ((CookieStateProvider)AuthStateProvider).NotifyAuthenticationStateChanged();
+                
+                NavigationManager.NavigateTo("/customers");
             }
             else
             {

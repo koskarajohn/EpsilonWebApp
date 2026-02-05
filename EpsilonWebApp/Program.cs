@@ -13,10 +13,10 @@ using EpsilonWebApp.Core.Features.Customers.UpdateCustomer;
 using EpsilonWebApp.Endpoints;
 using EpsilonWebApp.SQLServer;
 using EpsilonWebApp.SQLServer.Registration;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using Serilog;
-using Serilog.Filters;
 using Login = EpsilonWebApp.Core.Features.Authentication.Login.Login;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,6 +48,15 @@ builder.Services.AddScoped<ILogin, Login>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = "CustomScheme";
+        options.DefaultChallengeScheme = "CustomScheme";
+    })
+    .AddScheme<AuthenticationSchemeOptions, CustomAuthenticationHandler>("CustomScheme", null);
+builder.Services.AddAuthorization();
+builder.Services.AddCascadingAuthenticationState();
+
 var app = builder.Build();
 app.Logger.LogInformation("Application starting {EnvironmentName}", app.Environment.EnvironmentName);
 
@@ -66,6 +75,10 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 app.UseAntiforgery();
+
+app.UseAuthentication();  
+app.UseAuthorization();   
+
 //app.UseMiddleware<AuthenticationMiddleware>();
 
 app.RegisterCustomerEndpoints();
