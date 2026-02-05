@@ -37,8 +37,16 @@ public static class AuthenticationEndpoints
             
             return response.ToResult();
         }).AllowAnonymous();
+        
+        group.MapPost("/logout", (HttpContext httpContext, CancellationToken cancellationToken) =>
+        {
 
-        group.MapGet("/me", async (HttpContext httpContext, CancellationToken cancellationToken) =>
+            httpContext.Response.Cookies.Delete("X-AUTH-TOKEN");
+
+            return Results.Ok();
+        }).RequireAuthorization();
+
+        group.MapGet("/me", (HttpContext httpContext, CancellationToken cancellationToken) =>
         {
 
             var userId = httpContext.User.FindFirst("id")?.Value;
@@ -49,7 +57,7 @@ public static class AuthenticationEndpoints
                 Id = userId,
                 Email = email
             });
-        });
+        }).RequireAuthorization();
 
         return app;
     }

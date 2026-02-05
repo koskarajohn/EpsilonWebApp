@@ -15,7 +15,8 @@ public static class CustomerEndpoints
         var group = app
             .MapGroup("api/v1/customers")
             .WithTags("Customers")
-            .DisableAntiforgery();
+            .DisableAntiforgery()
+            .RequireAuthorization();
         
         group.MapGet("/{id:guid}", async (Guid id, IGetCustomer getCustomer, CancellationToken cancellationToken) =>
         {
