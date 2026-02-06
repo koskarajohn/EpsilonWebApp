@@ -1,3 +1,4 @@
+using System.Reflection;
 using EpsilonWebApp;
 using EpsilonWebApp.Client.Pages;
 using EpsilonWebApp.Components;
@@ -115,6 +116,14 @@ async Task MigrateDatabaseAsync(WebApplication webApplication)
                 await userRepo.AddAsync(dummyUser, CancellationToken.None);
                 
             }
+            
+            var assembly = Assembly.GetExecutingAssembly();
+            using var stream = assembly.GetManifestResourceStream("EpsilonWebApp.dummycustomers.sql");
+            using var reader = new StreamReader(stream!);
+            string sqlScript = reader.ReadToEnd();
+
+            await context.Database.ExecuteSqlRawAsync(sqlScript);
+
         }
         catch (Exception ex)
         {
