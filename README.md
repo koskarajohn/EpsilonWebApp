@@ -1,3 +1,7 @@
+# Instructions
+1. Run docker compose up --build
+2. Use this credentials to login: Email - kvkarag@gmail.com, Password: StrongPassword!@# 
+
 # Description
 
 1. 	You are given a solution that contains a Blazor Web App with a Customer model class.
