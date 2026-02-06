@@ -1,6 +1,7 @@
 # Instructions
 1. Run docker compose up --build
-2. Use this credentials to login: Email - kvkarag@gmail.com, Password: StrongPassword!@# 
+2. Open http://localhost:8080
+3. Use this credentials to login: Email - kvkarag@gmail.com , Password: StrongPassword!@# 
 
 # Description
 
