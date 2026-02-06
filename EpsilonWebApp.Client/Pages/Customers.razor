@@ -1,0 +1,126 @@
+@page "/Customers"
+@attribute [Authorize]
+@rendermode @(new InteractiveWebAssemblyRenderMode(false))
+@using EpsilonWebApp.Client.Components
+@using EpsilonWebApp.Shared.DTO
+@using Microsoft.AspNetCore.Authorization
+@inject APIClient APIClient
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<MudText Typo="Typo.h5" Class="my-4 text-center">Customers</MudText>
+
+<MudTable Items="@_customers" Dense="false" Hover="true" Bordered="true" Striped="true" Loading="_isLoading">
+    <ToolBarContent>
+        <MudSpacer />
+        <MudButton OnClick="CreateCustomer" Variant="Variant.Filled" Color="Color.Primary" Class="mr-2" Style="text-transform: initial;">Create New Customer</MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Contact Name</MudTh>
+        <MudTh>Address</MudTh>
+        <MudTh>City</MudTh>
+        <MudTh>Region</MudTh>
+        <MudTh>Postal Code</MudTh>
+        <MudTh>Country</MudTh>
+        <MudTh>Phone</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.ContactName</MudTd>
+        <MudTd>@context.Address</MudTd>
+        <MudTd>@context.City</MudTd>
+        <MudTd>@context.Region</MudTd>
+        <MudTd>@context.PostalCode</MudTd>
+        <MudTd>@context.Country</MudTd>
+        <MudTd>@context.Phone</MudTd>
+        <MudTd>
+            <MudIcon Icon="@Icons.Material.Filled.Edit" @onclick="() => UpdateCustomer(context)"></MudIcon>
+            <MudIcon Icon="@Icons.Material.Filled.Delete" @onclick="() => DeleteCustomer(context)"></MudIcon>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager/>
+    </PagerContent>
+</MudTable>
+
+@code {
+    
+    private IEnumerable<CustomerDTO> _customers = new List<CustomerDTO>();
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var customers = await APIClient.GetAsync<List<CustomerDTO>>("customers");
+        _customers = customers;
+        _isLoading = false;
+    }
+
+    private async Task DeleteCustomer(CustomerDTO customer)
+    {
+        var parameters = new DialogParameters<YesNoDialog>()
+        {
+            { x => x.Title, "Delete Customer" },
+            {x => x.Content, "Customer will be deleted. Do you wish to continue" }
+        };
+        
+        var dialog = await DialogService.ShowAsync<YesNoDialog>("Delete Customer", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+
+            var deleteResponse = await APIClient.DeleteAsync($"customers/{customer.Id}");
+            if (deleteResponse.Success)
+            {
+                var list = (List<CustomerDTO>)_customers;
+                list.Remove(customer);
+                Snackbar.Add("Success", Severity.Success);
+            }
+                
+            else
+                Snackbar.Add(deleteResponse!.ErrorMessage, Severity.Error);
+        }
+    }
+    
+    private async Task UpdateCustomer(CustomerDTO customer)
+    {
+        var parameters = new DialogParameters<UpsertCustomer>()
+        {
+            { x => x.Customer, UpsertCustomerDTO.GetFrom(customer) },
+        };
+        
+        var dialog = await DialogService.ShowAsync<UpsertCustomer>("Update Customer", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var updated = (UpsertCustomerDTO)result.Data;
+            customer.Address = updated.Address;
+            customer.City = updated.City;
+            customer.ContactName = updated.ContactName;
+            customer.PostalCode = updated.PostalCode;
+            customer.Country = updated.Country;
+            customer.Phone = updated.Phone;
+            customer.Region = updated.Region;
+        }
+    }
+    
+    private async Task CreateCustomer()
+    {
+        var parameters = new DialogParameters<UpsertCustomer>()
+        {
+        };
+        
+        var dialog = await DialogService.ShowAsync<UpsertCustomer>("Create New Customer", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            var created = (UpsertCustomerDTO)result.Data;
+            
+            var list = (List<CustomerDTO>)_customers;
+            list.Insert(0,CustomerDTO.GetFrom((created)));
+        }
+    }
+
+}

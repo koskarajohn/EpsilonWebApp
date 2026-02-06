@@ -1,0 +1,98 @@
+@using EpsilonWebApp.Shared.DTO
+@inject APIClient Client
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+
+        @if (Customer is null)
+        {
+            <MudProgressCircular Indeterminate />
+        }
+        else
+        {
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudPaper Class="pa-4">
+                        <MudForm @ref="_form" Model="Customer">
+                            <MudTextField Label="Contact Name" @bind-Value="Customer.ContactName" For="@(() => Customer.ContactName)" Required="true"/>
+                            <MudTextField Label="Address" @bind-Value="Customer.Address" For="@(() => Customer.Address)" Required="true"/>
+                            <MudTextField Label="Country" @bind-Value="Customer.Country" For="@(() => Customer.Country)"/>
+                            <MudTextField Label="City" @bind-Value="Customer.City" For="@(() => Customer.City)"/>
+                            <MudTextField Label="Region" @bind-Value="Customer.Region" For="@(() => Customer.Region)"/>
+                            <MudTextField Label="PostalCode" @bind-Value="Customer.PostalCode" For="@(() => Customer.PostalCode)"/>
+                            <MudTextField Label="Phone" @bind-Value="Customer.Phone" For="@(() => Customer.Phone)" Required="true"/>
+                        </MudForm>
+                    </MudPaper>
+                </MudItem>
+
+            </MudGrid>
+        }
+        
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">OK</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+    
+    [Parameter]
+    public UpsertCustomerDTO Customer { get; set; }
+    
+    private MudForm? _form;
+    private bool _isUpdate = false;
+
+    protected override void OnParametersSet()
+    {
+        if (Customer is null)
+            Customer = new();
+
+        _isUpdate = Customer.Id.HasValue;
+    }
+
+    private async Task Submit()
+    {
+        await _form!.Validate();
+
+        if (!_form.IsValid)
+            return;
+
+        if (_isUpdate)
+            await UpdateCustomerAsync();
+        else
+            await CreateCustomerAsync();
+    }
+
+    private async Task UpdateCustomerAsync()
+    {
+        var updateResponse = await Client.PutAsync($"customers/{Customer.Id}", Customer);
+        if (updateResponse.Success)
+        {
+            
+            Snackbar.Add("Customer updated successfully.", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(Customer));
+        }
+        else
+            Snackbar.Add(updateResponse!.ErrorMessage, Severity.Error);
+    }
+    
+    private async Task CreateCustomerAsync()
+    {
+        var newCustomer = await Client.PostAsync<UpsertCustomerDTO>($"customers", Customer);
+        if (newCustomer.Id is null || newCustomer.Id != Guid.Empty)
+        {
+            
+            Snackbar.Add("Customer created successfully.", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(newCustomer));
+        }
+        else
+            Snackbar.Add("New customer creation failed", Severity.Error);
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

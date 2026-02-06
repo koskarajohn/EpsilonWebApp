@@ -1,0 +1,23 @@
+@rendermode @(new InteractiveWebAssemblyRenderMode(prerender: false))
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager NavigationManager
+@inject APIClient APIClient
+
+    <div class="nav-item px-3 mt-auto mb-4">
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Error"
+                   FullWidth="true"
+                   OnClick="HandleLogout"
+                   StartIcon="@Icons.Material.Filled.Logout">
+            Logout
+        </MudButton>
+    </div>
+
+@code {
+    private async Task HandleLogout()
+    {
+        var response = await APIClient.PostAsync("auth/logout", null);
+        if (response.Success)
+            NavigationManager.NavigateTo("/login", true);
+    }
+}

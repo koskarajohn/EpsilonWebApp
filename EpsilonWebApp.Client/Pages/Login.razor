@@ -1,0 +1,84 @@
+
+@page "/login"
+@layout EmptyLayout
+
+@rendermode @(new InteractiveWebAssemblyRenderMode(false))
+@using EpsilonWebApp.Shared.DTO
+@using EpsilonWebApp.Client.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@inject ISnackbar Snackbar
+@inject APIClient APIClient
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+
+<style>
+      .login-container {
+          min-height: 100vh;
+          background-color: #f5f5f5;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+
+      .login-paper {
+          width: 100%;
+          max-width: 400px;
+      }
+  </style>
+
+<div class="login-container">
+    <MudPaper Elevation="3" Class="pa-6 login-paper mx-3">
+        <MudText Typo="Typo.h5" Class="my-4 text-center">User login</MudText>
+        <MudForm @ref="_form" Model="_model"> 
+            <MudTextField Label="Email" @bind-Value="_model.Email" For="@(() => _model.Email)" Required="true" InputType="InputType.Email"/>
+            <MudTextField Label="Password" @bind-Value="_model.Password" For="@(() => _model.Password)" Required="true" InputType="InputType.Password"/>
+            <MudButton Class="mt-4" ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="false"
+                       Disabled="_isLoading"
+                       OnClick="Submit">
+                Login
+            </MudButton>
+        </MudForm>
+    </MudPaper>
+</div>
+
+@code {
+
+    private MudForm? _form;
+    private LoginDTO _model = new LoginDTO();
+    private bool _isLoading = false;
+
+    private async Task Submit()
+    {
+        await _form!.Validate();
+
+        if (!_form.IsValid)
+            return;
+        
+        try
+        {
+            _isLoading = true;
+            var response = await APIClient.PostAsync("auth/login", _model);
+
+            if (response.Success)
+            {
+                
+                ((CookieStateProvider)AuthStateProvider).NotifyAuthenticationStateChanged();
+                
+                NavigationManager.NavigateTo("/customers");
+            }
+            else
+            {
+                Snackbar.Add(response.ErrorMessage, Severity.Error);
+            }
+            
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+        
+    }
+}
